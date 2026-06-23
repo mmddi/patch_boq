@@ -1,20 +1,67 @@
-print("[NUSCENES][coord-debug]")
-print("  query_num_before_drop =", len(self.queries_utms))
-print("  database_num =", len(self.database_utms))
-print("  query_min =", self.queries_utms.min(axis=0), "query_max =", self.queries_utms.max(axis=0))
-print("  db_min    =", self.database_utms.min(axis=0), "db_max    =", self.database_utms.max(axis=0))
+def _align_query_coordinates_to_database_frame(self):
+    """
+    nuScenes ego_pose.translation 是每个 map/location 的局部坐标；
+    你的 aerial tile 文件名解析出来的是 UTM/全局投影坐标。
 
-_debug_knn = NearestNeighbors(n_neighbors=1, n_jobs=-1)
-_debug_knn.fit(self.database_utms)
-_debug_dist, _ = _debug_knn.kneighbors(self.queries_utms, return_distance=True)
-_debug_dist = _debug_dist.reshape(-1)
+    这里按 location 自动估计平移 offset：
+        aligned_query_xy = raw_query_xy + offset
 
-print(
-    "[NUSCENES][coord-debug]",
-    "nearest_db_dist:",
-    "min=", float(_debug_dist.min()),
-    "mean=", float(_debug_dist.mean()),
-    "median=", float(np.median(_debug_dist)),
-    "max=", float(_debug_dist.max()),
-    "train_pos_th=", opt.train_positives_dist_threshold,
-)
+    这样 query 和 database 才能在同一坐标系里做 radius_neighbors。
+    """
+
+    if len(self.queries_infos) == 0 or len(self.database_infos) == 0:
+        return
+
+    query_indices_by_loc = defaultdict(list)
+    db_indices_by_loc = defaultdict(list)
+
+    for idx, info in enumerate(self.queries_infos):
+        query_indices_by_loc[info["location"]].append(idx)
+
+    for idx, info in enumerate(self.database_infos):
+        db_indices_by_loc[info["location"]].append(idx)
+
+    aligned_queries = self.queries_utms.astype(np.float64).copy()
+
+    for location in sorted(set(query_indices_by_loc.keys()) & set(db_indices_by_loc.keys())):
+        q_idx = np.asarray(query_indices_by_loc[location], dtype=np.int64)
+        db_idx = np.asarray(db_indices_by_loc[location], dtype=np.int64)
+
+        if q_idx.size == 0 or db_idx.size == 0:
+            continue
+
+        q_xy = self.queries_utms[q_idx].astype(np.float64)
+        db_xy = self.database_utms[db_idx].astype(np.float64)
+
+        # 用 median 比 mean 更抗异常点。
+        q_center = np.median(q_xy, axis=0)
+        db_center = np.median(db_xy, axis=0)
+
+        offset = db_center - q_center
+        aligned_queries[q_idx] = q_xy + offset
+
+        # 同步 records 里的 east/north，后面 __getitem__ 会读取它们。
+        for local_i, global_i in enumerate(q_idx):
+            self.queries_infos[int(global_i)]["east"] = float(aligned_queries[int(global_i), 0])
+            self.queries_infos[int(global_i)]["north"] = float(aligned_queries[int(global_i), 1])
+
+        # 打印对齐后的最近距离，方便判断阈值是否还需要调大。
+        debug_knn = NearestNeighbors(n_neighbors=1, n_jobs=max(1, opt.num_workers))
+        debug_knn.fit(db_xy)
+        debug_dist, _ = debug_knn.kneighbors(aligned_queries[q_idx], return_distance=True)
+        debug_dist = debug_dist.reshape(-1)
+
+        print(
+            "[NUSCENES][coord-align]",
+            f"location={location}",
+            f"offset=({offset[0]:.3f}, {offset[1]:.3f})",
+            f"nearest_after_min={float(debug_dist.min()):.3f}",
+            f"nearest_after_median={float(np.median(debug_dist)):.3f}",
+            f"nearest_after_mean={float(debug_dist.mean()):.3f}",
+            f"train_pos_th={opt.train_positives_dist_threshold}",
+        )
+
+    self.queries_utms = aligned_queries.astype(np.float32)
+
+
+
