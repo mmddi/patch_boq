@@ -1,0 +1,51 @@
+self.train_dataset = NuScenesTripletsDataset(
+    args=self.dataset_args,
+    dataset_name="nuscenes",
+    split="train",
+    pos_num_per_query=self.pos_num_per_query,
+    negs_num_per_query=self.negs_num_per_query,
+)
+
+print(
+    "[NUSCENES][train]",
+    f"version={self.train_version}",
+    f"locations={self.locations}",
+    f"camnames={self.camnames}",
+    f"maptype={self.maptype}",
+    f"aerial_size={self.aerial_size}",
+    f"aerial_zoom={self.aerial_zoom}",
+    f"aerial_scale={self.aerial_scale}",
+    f"database_num={self.train_dataset.database_num}",
+    f"queries_num_after_drop={self.train_dataset.queries_num}",
+    f"train_pos_th={self.train_positives_dist_threshold}",
+)
+
+if self.train_dataset.database_num == 0:
+    raise RuntimeError(
+        "nuScenes train database_num=0. "
+        "请检查 aerial 文件夹是否存在、是否为空，以及 --nuscenes_train_version / "
+        "--nuscenes_locations / --nuscenes_aerial_size 是否匹配。"
+    )
+
+if self.train_dataset.queries_num == 0:
+    raise RuntimeError(
+        "nuScenes train queries_num=0 after dropping queries without positives. "
+        "通常是 train_positives_dist_threshold 太小，或者 query 坐标和 aerial tile 坐标不匹配。"
+    )
+
+self.dataset_args.cache_refresh_rate = min(self.cache_refresh_rate, self.train_dataset.queries_num)
+self.train_dataset.default_triplets_count = self.dataset_args.cache_refresh_rate
+
+print(
+    "[NUSCENES][train]",
+    f"cache_refresh_rate={self.dataset_args.cache_refresh_rate}",
+)
+
+self.train_dataset.bootstrap_triplets_from_geometry(
+    triplets_count=self.dataset_args.cache_refresh_rate
+)
+
+print(
+    "[NUSCENES][train]",
+    f"triplets={len(self.train_dataset)}",
+)
