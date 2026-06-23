@@ -1,0 +1,37 @@
+e. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+WARNING:root:Aerial directory is empty: /mnt/sda/ZhengyiXu/datasets/radar/nuscenes/aerial_v1.0-test_singapore-hollandvillage_1_20_320_satellite
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+Traceback (most recent call last):
+  File "/home/zhan/work/CvPR/cvpr/Bag-of-Queries-main/train.py", line 1529, in <module>
+    train(hparams, dev_mode=args.dev)
+  File "/home/zhan/work/CvPR/cvpr/Bag-of-Queries-main/train.py", line 1275, in train
+    trainer.fit(model=model, datamodule=datamodule)
+  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/trainer/trainer.py", line 584, in fit
+    call._call_and_handle_interrupt(
+  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/trainer/call.py", line 49, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/trainer/trainer.py", line 630, in _fit_impl
+    self._run(model, ckpt_path=ckpt_path, weights_only=weights_only)
+  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/trainer/trainer.py", line 1079, in _run
+    results = self._run_stage()
+  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/trainer/trainer.py", line 1123, in _run_stage
+    self.fit_loop.run()
+  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/loops/fit_loop.py", line 209, in run
+    self.setup_data()
+  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/loops/fit_loop.py", line 238, in setup_data
+    train_dataloader = _request_dataloader(source)
+  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/trainer/connectors/data_connector.py", line 335, in _request_dataloader
+    return data_source.dataloader()
+  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/trainer/connectors/data_connector.py", line 302, in dataloader
+    return call._call_lightning_datamodule_hook(self.instance.trainer, self.name)
+  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/trainer/call.py", line 199, in _call_lightning_datamodule_hook
+    return fn(*args, **kwargs)
+  File "/home/zhan/work/CvPR/cvpr/Bag-of-Queries-main/src/dataloaders/nuscenes_datamodule.py", line 163, in train_dataloader
+    return DataLoader(
+  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/fabric/utilities/data.py", line 325, in wrapper
+    init(obj, *args, **kwargs)
+  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 376, in __init__
+    sampler = RandomSampler(dataset, generator=generator)  # type: ignore[arg-type]
+  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/torch/utils/data/sampler.py", line 164, in __init__
+    raise ValueError(
+ValueError: num_samples should be a positive integer value, but got num_samples=0
