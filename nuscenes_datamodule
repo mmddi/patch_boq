@@ -1,51 +1,20 @@
-self.train_dataset = NuScenesTripletsDataset(
-    args=self.dataset_args,
-    dataset_name="nuscenes",
-    split="train",
-    pos_num_per_query=self.pos_num_per_query,
-    negs_num_per_query=self.negs_num_per_query,
-)
+print("[NUSCENES][coord-debug]")
+print("  query_num_before_drop =", len(self.queries_utms))
+print("  database_num =", len(self.database_utms))
+print("  query_min =", self.queries_utms.min(axis=0), "query_max =", self.queries_utms.max(axis=0))
+print("  db_min    =", self.database_utms.min(axis=0), "db_max    =", self.database_utms.max(axis=0))
+
+_debug_knn = NearestNeighbors(n_neighbors=1, n_jobs=-1)
+_debug_knn.fit(self.database_utms)
+_debug_dist, _ = _debug_knn.kneighbors(self.queries_utms, return_distance=True)
+_debug_dist = _debug_dist.reshape(-1)
 
 print(
-    "[NUSCENES][train]",
-    f"version={self.train_version}",
-    f"locations={self.locations}",
-    f"camnames={self.camnames}",
-    f"maptype={self.maptype}",
-    f"aerial_size={self.aerial_size}",
-    f"aerial_zoom={self.aerial_zoom}",
-    f"aerial_scale={self.aerial_scale}",
-    f"database_num={self.train_dataset.database_num}",
-    f"queries_num_after_drop={self.train_dataset.queries_num}",
-    f"train_pos_th={self.train_positives_dist_threshold}",
-)
-
-if self.train_dataset.database_num == 0:
-    raise RuntimeError(
-        "nuScenes train database_num=0. "
-        "请检查 aerial 文件夹是否存在、是否为空，以及 --nuscenes_train_version / "
-        "--nuscenes_locations / --nuscenes_aerial_size 是否匹配。"
-    )
-
-if self.train_dataset.queries_num == 0:
-    raise RuntimeError(
-        "nuScenes train queries_num=0 after dropping queries without positives. "
-        "通常是 train_positives_dist_threshold 太小，或者 query 坐标和 aerial tile 坐标不匹配。"
-    )
-
-self.dataset_args.cache_refresh_rate = min(self.cache_refresh_rate, self.train_dataset.queries_num)
-self.train_dataset.default_triplets_count = self.dataset_args.cache_refresh_rate
-
-print(
-    "[NUSCENES][train]",
-    f"cache_refresh_rate={self.dataset_args.cache_refresh_rate}",
-)
-
-self.train_dataset.bootstrap_triplets_from_geometry(
-    triplets_count=self.dataset_args.cache_refresh_rate
-)
-
-print(
-    "[NUSCENES][train]",
-    f"triplets={len(self.train_dataset)}",
+    "[NUSCENES][coord-debug]",
+    "nearest_db_dist:",
+    "min=", float(_debug_dist.min()),
+    "mean=", float(_debug_dist.mean()),
+    "median=", float(np.median(_debug_dist)),
+    "max=", float(_debug_dist.max()),
+    "train_pos_th=", opt.train_positives_dist_threshold,
 )
