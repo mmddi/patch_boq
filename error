@@ -1,4 +1,4 @@
-python train.py --use_kitti360_boq --view_specific_adapter --kitti360_path /mnt/sda/ZhengyiXu/datasets/cmvpr/kitti360/KITTI-360 --gpu_id 0 --dataset_name nuscenes
+ python train.py --nuscenes_train_pos_th 100 --nuscenes_val_pos_th 100 --view_specific_adapter --gpu_id 0 --dataset_name nuscenes
 Seed set to 2026
 /home/zhan/work/CvPR/cvpr/Bag-of-Queries-main/dinov2_src/dinov2/layers/swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
   warnings.warn("xFormers is not available (SwiGLU)")
@@ -14,7 +14,13 @@ TPU available: False, using: 0 TPU cores
 💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
 `Trainer(limit_val_batches=1.0)` was configured so 100% of the batches will be used..
 You are using a CUDA device ('NVIDIA GeForce RTX 4090') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
-[NUSCENES][train] version=v1.0-trainval locations=boston-seaport,singapore-hollandvillage,singapore-onenorth,singapore-queenstown camnames=CAM_FRONT maptype=satellite aerial_size=320 aerial_zoom=20 aerial_scale=1 database_num=38010 queries_num_after_drop=0 train_pos_th=10.0
+[NUSCENES][coord-debug]
+  query_num_before_drop = 34149
+  database_num = 38010
+  query_min = [118.57208 328.6896 ] query_max = [2685.7244 3332.7463]
+  db_min    = [330787.5  142175.72] db_max    = [ 367000.3 4691111. ]
+[NUSCENES][coord-debug] nearest_db_dist: min= 387273.10048763524 mean= 388881.069488153 median= 388931.2275715873 max= 389928.8720943234 train_pos_th= 100.0
+[NUSCENES][train] version=v1.0-trainval locations=boston-seaport,singapore-hollandvillage,singapore-onenorth,singapore-queenstown camnames=CAM_FRONT maptype=satellite aerial_size=320 aerial_zoom=20 aerial_scale=1 database_num=38010 queries_num_after_drop=0 train_pos_th=100.0
 Traceback (most recent call last):
   File "/home/zhan/work/CvPR/cvpr/Bag-of-Queries-main/train.py", line 1529, in <module>
     train(hparams, dev_mode=args.dev)
@@ -35,4 +41,3 @@ Traceback (most recent call last):
   File "/home/zhan/work/CvPR/cvpr/Bag-of-Queries-main/src/dataloaders/nuscenes_datamodule.py", line 163, in setup
     raise RuntimeError(
 RuntimeError: nuScenes train queries_num=0 after dropping queries without positives. 通常是 train_positives_dist_threshold 太小，或者 query 坐标和 aerial tile 坐标不匹配。
-
