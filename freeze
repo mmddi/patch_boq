@@ -1,0 +1,67 @@
+if args.compile:
+        hparams.compile = True
+    if args.silent:
+        hparams.silent = True
+    if args.debug_shapes:
+        hparams.debug_shapes = True
+    if args.print_model_modules:
+        hparams.print_model_modules = True
+    if args.scratch_boq:
+        hparams.use_pretrained_boq = False
+    if args.dual_branch:
+        hparams.dual_branch = True
+    if args.shared_query_boq:
+        hparams.shared_query_boq = True
+    if args.view_specific_adapter:
+        hparams.use_view_specific_adapter = True
+    if args.dinov2_block_adapter:
+        hparams.use_dinov2_block_adapter = True
+    if args.use_kitti360_boq:
+        hparams.use_kitti360_boq = True
+    if args.kitti360_share_db:
+        hparams.kitti360_share_db = True
+    if args.adapter_layers is not None:
+        hparams.adapter_layers = list(args.adapter_layers)
+    if args.kitti360_q_size is not None:
+        hparams.kitti360_query_img_size = tuple(args.kitti360_q_size)
+    if args.kitti360_db_size is not None:
+        hparams.kitti360_db_img_size = tuple(args.kitti360_db_size)
+    if args.disable_adapter_zero_init:
+        hparams.adapter_zero_init = False
+    if args.no_normalize_descriptor:
+        hparams.normalize_descriptor = False
+    if args.freeze_backbone:
+        hparams.freeze_backbone = False
+    if args.freeze_aggregator:
+        hparams.freeze_aggregator = True
+    if args.freeze_query_backbone:
+        hparams.freeze_query_backbone = False
+    if args.freeze_db_backbone:
+        hparams.freeze_db_backbone = False
+    if args.freeze_shared_aggregator:
+        hparams.freeze_shared_aggregator = True
+    if args.freeze_ground_adapter:
+        hparams.train_ground_adapter = True
+    if args.freeze_sat_adapter:
+        hparams.train_sat_adapter = True
+    if args.print_train_items_every_epoch:
+        hparams.print_train_items_every_epoch = True
+    
+    if args.dataset_name == "nuscenes" or args.use_nuscenes_boq:
+        hparams.dataset_name = "nuscenes"
+        hparams.use_kitti360_boq = False
+        hparams.use_nuscenes_boq = True
+
+    elif args.dataset_name == "kitti360" or args.use_kitti360_boq:
+        hparams.dataset_name = "kitti360"
+        hparams.use_kitti360_boq = True
+        hparams.use_nuscenes_boq = False
+
+    if args.nuscenes_share_db:
+        hparams.nuscenes_share_db = True
+
+    if args.nuscenes_q_size is not None:
+        hparams.nuscenes_query_img_size = tuple(args.nuscenes_q_size)
+
+    if args.nuscenes_db_size is not None:
+        hparams.nuscenes_db_img_size = tuple(args.nuscenes_db_size)
