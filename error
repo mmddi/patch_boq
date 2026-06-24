@@ -1,4 +1,4 @@
- python train.py --nuscenes_train_pos_th 100 --nuscenes_val_pos_th 100 --view_specific_adapter --gpu_id 0 --dataset_name nuscenes
+python train.py --nuscenes_train_pos_th 100 --nuscenes_val_pos_th 100 --view_specific_adapter --gpu_id 0 --dataset_name nuscenes --bs 2
 Seed set to 2026
 /home/zhan/work/CvPR/cvpr/Bag-of-Queries-main/dinov2_src/dinov2/layers/swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
   warnings.warn("xFormers is not available (SwiGLU)")
@@ -14,30 +14,38 @@ TPU available: False, using: 0 TPU cores
 💡 Tip: For seamless cloud logging and experiment tracking, try installing [litlogger](https://pypi.org/project/litlogger/) to enable LitLogger, which logs metrics and artifacts automatically to the Lightning Experiments platform.
 `Trainer(limit_val_batches=1.0)` was configured so 100% of the batches will be used..
 You are using a CUDA device ('NVIDIA GeForce RTX 4090') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+[NUSCENES][coord-align] location=boston-seaport offset=(330492.456, 4689190.826) nearest_after_min=0.034 nearest_after_median=5.787 nearest_after_mean=7.170 train_pos_th=100.0
+[NUSCENES][coord-align] location=singapore-hollandvillage offset=(364487.792, 143651.064) nearest_after_min=0.082 nearest_after_median=10.872 nearest_after_mean=11.130 train_pos_th=100.0
+[NUSCENES][coord-align] location=singapore-onenorth offset=(364797.073, 142420.628) nearest_after_min=0.003 nearest_after_median=1.388 nearest_after_mean=1.374 train_pos_th=100.0
+[NUSCENES][coord-align] location=singapore-queenstown offset=(362884.960, 141321.885) nearest_after_min=0.133 nearest_after_median=8.724 nearest_after_mean=8.708 train_pos_th=100.0
 [NUSCENES][coord-debug]
   query_num_before_drop = 34149
   database_num = 38010
-  query_min = [118.57208 328.6896 ] query_max = [2685.7244 3332.7463]
+  query_min = [330790.56 142184.88] query_max = [ 366976.94 4691086.5 ]
   db_min    = [330787.5  142175.72] db_max    = [ 367000.3 4691111. ]
-[NUSCENES][coord-debug] nearest_db_dist: min= 387273.10048763524 mean= 388881.069488153 median= 388931.2275715873 max= 389928.8720943234 train_pos_th= 100.0
-[NUSCENES][train] version=v1.0-trainval locations=boston-seaport,singapore-hollandvillage,singapore-onenorth,singapore-queenstown camnames=CAM_FRONT maptype=satellite aerial_size=320 aerial_zoom=20 aerial_scale=1 database_num=38010 queries_num_after_drop=0 train_pos_th=100.0
-Traceback (most recent call last):
-  File "/home/zhan/work/CvPR/cvpr/Bag-of-Queries-main/train.py", line 1529, in <module>
-    train(hparams, dev_mode=args.dev)
-  File "/home/zhan/work/CvPR/cvpr/Bag-of-Queries-main/train.py", line 1275, in train
-    trainer.fit(model=model, datamodule=datamodule)
-  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/trainer/trainer.py", line 584, in fit
-    call._call_and_handle_interrupt(
-  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/trainer/call.py", line 49, in _call_and_handle_interrupt
-    return trainer_fn(*args, **kwargs)
-  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/trainer/trainer.py", line 630, in _fit_impl
-    self._run(model, ckpt_path=ckpt_path, weights_only=weights_only)
-  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/trainer/trainer.py", line 1039, in _run
-    call._call_setup_hook(self)  # allow user to set up LightningModule in accelerator environment
-  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/trainer/call.py", line 108, in _call_setup_hook
-    _call_lightning_datamodule_hook(trainer, "setup", stage=fn)
-  File "/home/zhan/third/anaconda3/envs/boq/lib/python3.10/site-packages/lightning/pytorch/trainer/call.py", line 199, in _call_lightning_datamodule_hook
-    return fn(*args, **kwargs)
-  File "/home/zhan/work/CvPR/cvpr/Bag-of-Queries-main/src/dataloaders/nuscenes_datamodule.py", line 163, in setup
-    raise RuntimeError(
-RuntimeError: nuScenes train queries_num=0 after dropping queries without positives. 通常是 train_positives_dist_threshold 太小，或者 query 坐标和 aerial tile 坐标不匹配。
+[NUSCENES][coord-debug] nearest_db_dist: min= 0.0 mean= 6.448608752071631 median= 4.871894042618333 max= 29.56454802631016 train_pos_th= 100.0
+[NUSCENES][train] version=v1.0-trainval locations=boston-seaport,singapore-hollandvillage,singapore-onenorth,singapore-queenstown camnames=CAM_FRONT maptype=satellite aerial_size=320 aerial_zoom=20 aerial_scale=1 database_num=38010 queries_num_after_drop=34149 train_pos_th=100.0
+[NUSCENES][train] cache_refresh_rate=1024
+[NUSCENES][train] triplets=1024
+WARNING:root:Aerial directory is empty: /mnt/sda/ZhengyiXu/datasets/radar/nuscenes/aerial_v1.0-test_singapore-hollandvillage_1_20_320_satellite
+[NUSCENES][coord-align] location=boston-seaport offset=(330534.323, 4689168.294) nearest_after_min=0.124 nearest_after_median=12.570 nearest_after_mean=14.299 train_pos_th=100.0
+[NUSCENES][coord-align] location=singapore-onenorth offset=(364799.661, 142418.448) nearest_after_min=0.034 nearest_after_median=2.460 nearest_after_mean=2.136 train_pos_th=100.0
+[NUSCENES][coord-align] location=singapore-queenstown offset=(362868.064, 141319.606) nearest_after_min=0.133 nearest_after_median=1.018 nearest_after_mean=1.005 train_pos_th=100.0
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0,1,2,3]
+Epoch 1/40 | train_loss=0.2088 | R@1=12.00 | R@5=24.70 | R@10=32.72 | R@20=43.11 | lr=0.000010 | train_time=75.901s | val_time=22.398s | epoch_time=98.301s
+Best Recall@1 updated: 12.0007
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1172/1172 [01:07<00:00, 17.27it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 32/32 [00:03<00:00,  9.00it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1024/1024 [00:57<00:00, 17.74it/s]
+Epoch 2/40 | train_loss=0.1990 | R@1=30.34 | R@5=45.56 | R@10=53.61 | R@20=62.58 | lr=0.000020 | train_time=74.159s | val_time=22.222s | epoch_time=96.384s
+Best Recall@1 updated: 30.3429
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1171/1171 [01:08<00:00, 17.15it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 32/32 [00:03<00:00,  9.00it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1024/1024 [00:58<00:00, 17.42it/s]
+Epoch 3/40 | train_loss=0.1719 | R@1=41.61 | R@5=52.48 | R@10=59.59 | R@20=66.98 | lr=0.000030 | train_time=80.374s | val_time=22.155s | epoch_time=102.533s
+Best Recall@1 updated: 41.6112
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1166/1166 [01:08<00:00, 17.07it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 32/32 [00:03<00:00,  8.95it/s]
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1024/1024 [01:00<00:00, 16.90it/s]
+Epoch 4/40 | train_loss=0.1319 | R@1=26.36 | R@5=35.69 | R@10=41.51 | R@20=47.00 | lr=0.000040 | train_time=73.793s | val_time=21.499s | epoch_time=95.294s
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1172/1172 [01:08<00:00, 17.16it/s]
